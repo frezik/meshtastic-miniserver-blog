@@ -40,16 +40,22 @@ mod tests {
     {
         let pack = RequestPacket::new( 0xAB12 ).unwrap();
         let pack_vec = pack.to_vec();
+        let connection_id_bytes = &pack_vec[4..8];
 
-        assert_eq!( pack_vec, vec![
+        let mut expect_vec: Vec<u8> = vec![
             packet::MAGIC_NUM_BE,
             packet::MAGIC_NUM_LE,
             packet::PROTOCOL_VERSION_BE,
             packet::PROTOCOL_VERSION_LE,
+        ];
+        expect_vec.extend( connection_id_bytes );
+        expect_vec.extend( vec![
             packet::PacketType::Request.value(),
             2,
             0xAB,
             0x12,
-        ]);
+        ].clone() );
+
+        assert_eq!( pack_vec, expect_vec );
     }
 }
