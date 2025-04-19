@@ -1,9 +1,6 @@
 pub mod request;
 pub mod directory_response;
-use rand;
-use rand::Rng;
-use rand::SeedableRng;
-use rand::rngs::SmallRng;
+
 
 const MAGIC_NUM_BE: u8 = 0xBB;
 const MAGIC_NUM_LE: u8 = 0x50;
@@ -37,6 +34,7 @@ pub enum PacketError {
 pub fn packet_to_vec(
     packet_type: PacketType,
     payload: Vec<u8>,
+    connection_id: u16,
 ) -> Result< Vec<u8>, PacketError >
 {
     let payload_len = payload.len();
@@ -44,22 +42,15 @@ pub fn packet_to_vec(
         return Err( PacketError::PayloadTooLarge );
     }
 
-    let mut rng = SmallRng::from_rng( &mut rand::rng() );
-    let connection_id: Vec<u8> = vec![
-        rng.random(),
-        rng.random(),
-        rng.random(),
-        rng.random(),
-    ];
-
     let mut out_vec: Vec<u8> = vec![
         MAGIC_NUM_BE,
         MAGIC_NUM_LE,
         PROTOCOL_VERSION_BE,
         PROTOCOL_VERSION_LE,
+        packet_type.value(),
+        ( ((connection_id >> 8) & 0xFF) as u8 ),
+        ( (connection_id & 0xFF) as u8 ),
     ];
-    out_vec.extend( connection_id );
-    out_vec.push( packet_type.value() );
     out_vec.push( payload_len as u8 );
     out_vec.extend( payload.clone() );
 
