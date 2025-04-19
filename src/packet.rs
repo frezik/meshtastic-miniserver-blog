@@ -14,6 +14,7 @@ const PROTOCOL_VERSION: u16 = ((PROTOCOL_VERSION_BE as u16) << 8)
 pub enum PacketType {
     Request,
     DirectoryResponse,
+    ArticleResponse,
 }
 
 impl PacketType {
@@ -22,6 +23,7 @@ impl PacketType {
         match *self {
             PacketType::Request => 0x00,
             PacketType::DirectoryResponse => 0x01,
+            PacketType::ArticleResponse => 0x02,
         }
     }
 }
@@ -56,3 +58,6 @@ pub fn packet_to_vec(
 
     return Ok( out_vec );
 }
+
+
+// TODO test w/oversized payload
