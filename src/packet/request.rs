@@ -1,22 +1,9 @@
-const MAGIC_NUM_BE: u8 = 0xBB;
-
-const MAGIC_NUM_LE: u8 = 0x50;
-const MAGIC_NUM: u16 = ((MAGIC_NUM_BE as u16) << 8)
-    | (MAGIC_NUM_LE as u16);
-const PROTOCOL_VERSION_BE: u8 = 0x00;
-const PROTOCOL_VERSION_LE: u8 = 0x01;
-const PROTOCOL_VERSION: u16 = ((PROTOCOL_VERSION_BE as u16) << 8)
-    | (PROTOCOL_VERSION_LE as u16);
-const PACKET_ID_REQUEST: u8 = 0x00;
-
-
-#[derive(Debug)]
-pub enum PacketError {
-    PayloadTooLarge,
-}
+use crate::packet;
 
 pub struct RequestPacket
 {
+    // TODO remove magic_num, version, and packet_type. Make payload_length
+    // and payload private fields
     pub magic_num: u16,
     pub version: u16,
     pub packet_type: u8,
@@ -25,7 +12,7 @@ pub struct RequestPacket
 }
 
 impl RequestPacket {
-    pub fn new( resource_num: u16 ) -> Result<Self, PacketError>
+    pub fn new( resource_num: u16 ) -> Result<Self, packet::PacketError>
     {
         let resource_num_big: u8 = ((resource_num >> 8) & 0xFF) as u8;
         let resource_num_small: u8 = (resource_num & 0xFF) as u8;
@@ -33,9 +20,9 @@ impl RequestPacket {
         let len: u8 = payload.len() as u8;
 
         Ok( Self {
-            magic_num: MAGIC_NUM,
-            version: PROTOCOL_VERSION,
-            packet_type: PACKET_ID_REQUEST,
+            magic_num: packet::MAGIC_NUM,
+            version: packet::PROTOCOL_VERSION,
+            packet_type: packet::PACKET_ID_REQUEST,
             payload_length: len,
             payload: payload,
         })
@@ -44,10 +31,10 @@ impl RequestPacket {
     pub fn to_vec( &self ) -> Vec<u8>
     {
         let mut out_vec: Vec<u8> = vec![
-            MAGIC_NUM_BE,
-            MAGIC_NUM_LE,
-            PROTOCOL_VERSION_BE,
-            PROTOCOL_VERSION_LE,
+            packet::MAGIC_NUM_BE,
+            packet::MAGIC_NUM_LE,
+            packet::PROTOCOL_VERSION_BE,
+            packet::PROTOCOL_VERSION_LE,
             self.packet_type,
             self.payload_length,
         ];
@@ -79,11 +66,11 @@ mod tests {
         let pack = RequestPacket::new( 0xAB12 ).unwrap();
         let pack_vec = pack.to_vec();
         assert_eq!( pack_vec, vec![
-            MAGIC_NUM_BE,
-            MAGIC_NUM_LE,
-            PROTOCOL_VERSION_BE,
-            PROTOCOL_VERSION_LE,
-            PACKET_ID_REQUEST,
+            packet::MAGIC_NUM_BE,
+            packet::MAGIC_NUM_LE,
+            packet::PROTOCOL_VERSION_BE,
+            packet::PROTOCOL_VERSION_LE,
+            packet::PACKET_ID_REQUEST,
             2,
             0xAB,
             0x12,
