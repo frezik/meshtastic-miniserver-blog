@@ -1,4 +1,5 @@
 pub mod request;
+pub mod directory_response;
 use rand;
 use rand::Rng;
 use rand::SeedableRng;
@@ -15,6 +16,7 @@ const PROTOCOL_VERSION: u16 = ((PROTOCOL_VERSION_BE as u16) << 8)
 
 pub enum PacketType {
     Request,
+    DirectoryResponse,
 }
 
 impl PacketType {
@@ -22,6 +24,7 @@ impl PacketType {
     {
         match *self {
             PacketType::Request => 0x00,
+            PacketType::DirectoryResponse => 0x01,
         }
     }
 }
