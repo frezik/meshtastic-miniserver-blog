@@ -18,20 +18,18 @@ pub struct RequestPacket
 }
 
 impl RequestPacket {
-    pub fn new( payload: Vec<u8> ) -> Result<Self, PacketError>
+    pub fn new( resource_num: u16 ) -> Result<Self, PacketError>
     {
-        let len = payload.len();
-        if len > 255 {
-            return Err( PacketError::PayloadTooLarge );
-        }
-
-        let u8_len = len as u8;
+        let resource_num_big: u8 = ((resource_num >> 8) & 0xFF) as u8;
+        let resource_num_small: u8 = (resource_num & 0xFF) as u8;
+        let payload: Vec<u8> = vec![ resource_num_big, resource_num_small ];
+        let len: u8 = payload.len() as u8;
 
         Ok( Self {
             magic_num: MAGIC_NUM,
             version: PROTOCOL_VERSION,
             packet_type: PACKET_ID_REQUEST,
-            payload_length: u8_len,
+            payload_length: len,
             payload: payload,
         })
     }
@@ -45,21 +43,12 @@ mod tests {
     #[test]
     fn request_packet()
     {
-        let pack_result = RequestPacket::new( vec![ 0, 0, 0, 0 ] );
+        let pack_result = RequestPacket::new( 0xAB12 );
 
         assert_eq!( pack_result.is_ok(), true );
 
         let pack = pack_result.unwrap();
-        assert_eq!( pack.payload_length, 4 );
-    }
-
-    #[test]
-    fn request_packet_payload_too_large()
-    {
-        let mut large_payload: Vec<u8> = (0..255).collect();
-        large_payload.push( 0 );
-        let pack_result = RequestPacket::new( large_payload );
-
-        assert_eq!( pack_result.is_ok(), false );
+        assert_eq!( pack.payload_length, 2 );
+        assert_eq!( pack.payload, vec![ 0xAB, 0x12 ] );
     }
 }
