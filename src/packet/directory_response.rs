@@ -98,4 +98,50 @@ mod tests {
 
         assert_eq!( pack_vec, expect_vec );
     }
+
+    #[test]
+    fn directory_multiple_entry()
+    {
+        let pack = DirectoryResponsePacket::new(
+            vec![
+                DirectoryEntry {
+                    entry_id: 0xAABB,
+                    name: "Foo".to_string(),
+                },
+                DirectoryEntry {
+                    entry_id: 0xAABC,
+                    name: "Bar".to_string(),
+                },
+            ],
+            0xCCDD,
+        ).unwrap();
+        let pack_vec = pack.to_vec();
+
+        let mut expect_vec: Vec<u8> = vec![
+            packet::MAGIC_NUM_BE,
+            packet::MAGIC_NUM_LE,
+            packet::PROTOCOL_VERSION_BE,
+            packet::PROTOCOL_VERSION_LE,
+            packet::PacketType::DirectoryResponse.value(),
+            0xCC, // connection ID BE
+            0xDD, // connection ID LE
+            12, // length
+               
+            0xAA, // entry ID BE
+            0xBB, // entry ID LE
+            0x46, // "F"
+            0x6F, // "o"
+            0x6F, // "o"
+            0x1E, // record separator
+                  
+            0xAA, // entry ID BE
+            0xBC, // entry ID LE
+            0x42, // "B"
+            0x61, // "a"
+            0x72, // "r"
+            0x1E, // record separator
+        ];
+
+        assert_eq!( pack_vec, expect_vec );
+    }
 }
