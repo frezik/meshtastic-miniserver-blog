@@ -88,7 +88,7 @@ mod tests {
         ).unwrap();
         let pack_vec = pack.to_vec();
 
-        let mut expect_vec: Vec<u8> = vec![
+        let expect_vec: Vec<u8> = vec![
             packet::MAGIC_NUM_BE,
             packet::MAGIC_NUM_LE,
             packet::PROTOCOL_VERSION_BE,
@@ -126,7 +126,7 @@ mod tests {
         ).unwrap();
         let pack_vec = pack.to_vec();
 
-        let mut expect_vec: Vec<u8> = vec![
+        let expect_vec: Vec<u8> = vec![
             packet::MAGIC_NUM_BE,
             packet::MAGIC_NUM_LE,
             packet::PROTOCOL_VERSION_BE,
