@@ -1,5 +1,7 @@
-pub mod request;
+pub mod article_response;
 pub mod directory_response;
+pub mod error_response;
+pub mod request;
 
 
 const MAGIC_NUM_BE: u8 = 0xBB;
@@ -15,6 +17,7 @@ pub enum PacketType {
     Request,
     DirectoryResponse,
     ArticleResponse,
+    ErrorResponse,
 }
 
 impl PacketType {
@@ -24,6 +27,7 @@ impl PacketType {
             PacketType::Request => 0x00,
             PacketType::DirectoryResponse => 0x01,
             PacketType::ArticleResponse => 0x02,
+            PacketType::ErrorResponse => 0x03,
         }
     }
 }
@@ -60,4 +64,17 @@ pub fn packet_to_vec(
 }
 
 
-// TODO test w/oversized payload
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn error_oversized_payload()
+    {
+        let mut payload: Vec<u8> = (0..255).collect();
+        payload.push( 0x00 );
+        let result = packet_to_vec( PacketType::Request, payload, 0x0000 );
+
+        assert_eq!( result.is_ok(), false );
+    }
+}
