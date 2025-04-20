@@ -3,12 +3,18 @@ use crate::packet;
 
 pub struct ErrorResponsePacket
 {
+    /// Error ID
     error_id: u8,
+    /// Connection ID
     connection_id: u16,
+    /// Brief string describing the error
     err_str: String,
 }
 
 impl ErrorResponsePacket {
+    /// Constructs a new DirectoryResponsePacket.
+    ///
+    /// `connection_id` is typically the ID sent by the RequestPacket.
     pub fn new(
         error_id: u8,
         connection_id: u16,
@@ -22,6 +28,8 @@ impl ErrorResponsePacket {
         })
     }
 
+    /// Convert the packet into a vector of bytes that can be sent over the 
+    /// wire
     pub fn to_vec( &self ) -> Vec<u8>
     {
         let mut payload: Vec<u8> = vec![

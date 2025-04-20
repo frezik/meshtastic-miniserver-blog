@@ -2,18 +2,25 @@ use crate::packet;
 
 pub struct DirectoryEntry
 {
+    /// A unique ID for this entry in the directory
     entry_id: u16,
+    /// A short string to describe the entry for meatsacks
     name: String,
 }
 
 pub struct DirectoryResponsePacket
 {
+    /// A list of directory entries
     entries: Vec<DirectoryEntry>,
+    /// Connection ID
     connection_id: u16,
 }
 
 impl DirectoryResponsePacket
 {
+    /// Constructs a new DirectoryResponsePacket.
+    ///
+    /// `connection_id` is typically the ID sent by the RequestPacket.
     pub fn new(
         entries: Vec<DirectoryEntry>,
         connection_id: u16,
@@ -25,6 +32,8 @@ impl DirectoryResponsePacket
         })
     }
 
+    /// Convert the packet into a vector of bytes that can be sent over the 
+    /// wire
     pub fn to_vec( &self ) -> Vec<u8>
     {
         let mut entry_payload: Vec<u8> = vec![];

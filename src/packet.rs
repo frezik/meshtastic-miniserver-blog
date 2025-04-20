@@ -13,6 +13,7 @@ const PROTOCOL_VERSION_LE: u8 = 0x01;
 const PROTOCOL_VERSION: u16 = ((PROTOCOL_VERSION_BE as u16) << 8)
     | (PROTOCOL_VERSION_LE as u16);
 
+/// Defines the different types of packets
 pub enum PacketType {
     Request,
     DirectoryResponse,
@@ -21,6 +22,7 @@ pub enum PacketType {
 }
 
 impl PacketType {
+    /// Transforms a packet type into its ID number
     fn value( &self ) -> u8
     {
         match *self {
@@ -33,10 +35,16 @@ impl PacketType {
 }
 
 #[derive(Debug)]
+/// Different types of errors
 pub enum PacketError {
     PayloadTooLarge,
 }
 
+/// Transforms a packet type, payload, and connection ID into a vector of 
+/// bytes to be sent over the wire.
+///
+/// Usually, this isn't called directly. Instead, call `to_vec()` on the 
+/// packet object.
 pub fn packet_to_vec(
     packet_type: PacketType,
     payload: Vec<u8>,

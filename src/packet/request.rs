@@ -7,10 +7,12 @@ use rand::rngs::SmallRng;
 
 pub struct RequestPacket
 {
+    /// The ID of the directory entry to request
     resource_num: u16,
 }
 
 impl RequestPacket {
+    /// Constructs a new RequestPacket.
     pub fn new( resource_num: u16 ) -> Result<Self, packet::PacketError>
     {
         Ok( Self {
@@ -18,6 +20,8 @@ impl RequestPacket {
         })
     }
 
+    /// Convert the packet into a vector of bytes that can be sent over the 
+    /// wire
     pub fn to_vec( &self ) -> Vec<u8>
     {
         let resource_num_big: u8 = ((self.resource_num >> 8) & 0xFF) as u8;

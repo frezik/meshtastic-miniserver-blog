@@ -3,11 +3,16 @@ use crate::packet;
 
 pub struct ArticleResponsePacket
 {
+    /// Contents of article
     article: String,
+    /// Connection ID
     connection_id: u16,
 }
 
 impl ArticleResponsePacket {
+    /// Constructs a new ArticleResponsePacket.
+    ///
+    /// `connection_id` is typically the ID sent by the RequestPacket.
     pub fn new(
         article: String,
         connection_id: u16,
@@ -19,6 +24,8 @@ impl ArticleResponsePacket {
         })
     }
 
+    /// Convert the packet into a vector of bytes that can be sent over the 
+    /// wire
     pub fn to_vec( &self ) -> Vec<u8>
     {
         let mut payload: Vec<u8> = vec![];
