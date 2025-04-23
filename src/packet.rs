@@ -124,10 +124,11 @@ pub fn vec_to_packet(
                 RequestPacket::from_vec( vec_packet ).unwrap()
             )
         ),
-        // TODO all of these
-        //PACKET_TYPE_DIRECTORY_RESPONSE => Ok(
-        //    DirectoryResponsePacket::from_vec( vec_packet )
-        //),
+        PACKET_TYPE_DIRECTORY_RESPONSE => Ok(
+            PacketResult::DirectoryResponse(
+                DirectoryResponsePacket::from_vec( vec_packet ).unwrap()
+            )
+        ),
         //PACKET_TYPE_ARTICLE_RESPONSE => Ok(
         //    ArticleResponsePacket::from_vec( vec_packet )
         //),

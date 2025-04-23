@@ -1,5 +1,7 @@
 use crate::packet;
 
+const RECORD_SEPARATOR: u8 = 0x1E;
+
 pub struct DirectoryEntry
 {
     /// A unique ID for this entry in the directory
@@ -32,6 +34,35 @@ impl DirectoryResponsePacket
         })
     }
 
+    /// Convert the vector of bytes into a packet object
+    pub fn from_vec(
+        vec_packet: Vec<u8>
+    ) -> Result<Self, packet::PacketError> {
+        let connection_id: u16 = ((vec_packet[5] as u16) << 8)
+            | (vec_packet[6] as u16);
+
+        let entry_strings = vec_packet.split( |i| RECORD_SEPARATOR == *i );
+        let entries = entry_strings.map( |entry| {
+            let entry_id = ((entry[0] as u16) << 8)
+                | (entry[1] as u16);
+
+            let entry_str_slice = &entry[ 2 .. entry.len() - 1 ];
+            let mut entry_vec = vec![];
+            entry_vec.extend_from_slice( entry_str_slice );
+            let entry_str = String::from_utf8( entry_vec ).unwrap();
+
+            DirectoryEntry {
+                entry_id: entry_id,
+                name: entry_str,
+            }
+        }).collect();
+
+        Ok( Self {
+            entries: entries,
+            connection_id: connection_id,
+        })
+    }
+
     /// Convert the packet into a vector of bytes that can be sent over the 
     /// wire
     pub fn to_vec( &self ) -> Vec<u8>
@@ -42,7 +73,7 @@ impl DirectoryResponsePacket
             entry_payload.push( ((entry.entry_id >> 8) & 0xFF) as u8 );
             entry_payload.push( (entry.entry_id & 0xFF) as u8 );
             entry_payload.extend( entry.name.as_bytes() );
-            entry_payload.push( 0x1E ); // record separator
+            entry_payload.push( RECORD_SEPARATOR );
         }
 
         packet::packet_to_vec(
