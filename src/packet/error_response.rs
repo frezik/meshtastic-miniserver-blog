@@ -102,7 +102,7 @@ mod tests {
     #[test]
     fn error_response_packet_deserialize()
     {
-        let mut pack = ErrorResponsePacket::new(
+        let pack = ErrorResponsePacket::new(
             0xBA,
             0xAB12,
             "foo".to_string(),
