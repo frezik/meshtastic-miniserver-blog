@@ -135,11 +135,11 @@ pub fn vec_to_packet(
                 ArticleResponsePacket::from_vec( vec_packet ).unwrap()
             )
         ),
-        //PACKET_TYPE_ERROR_RESPONSE => Ok(
-        //    PacketResult::ErrorResponse(
-        //        ErrorResponsePacket::from_vec( vec_packet ).unwrap()
-        //    )
-        //),
+        PACKET_TYPE_ERROR_RESPONSE => Ok(
+            PacketResult::ErrorResponse(
+                ErrorResponsePacket::from_vec( vec_packet ).unwrap()
+            )
+        ),
         _ => Err(
             PacketError::UnknownPacketType( packet_type ) 
         ),

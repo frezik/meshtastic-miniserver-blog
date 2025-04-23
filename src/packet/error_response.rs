@@ -28,6 +28,23 @@ impl ErrorResponsePacket {
         })
     }
 
+    /// Convert the vector of bytes into a packet object
+    pub fn from_vec(
+        vec_packet: Vec<u8>
+    ) -> Result<Self, packet::PacketError> {
+        let connection_id: u16 = ((vec_packet[5] as u16) << 8)
+            | (vec_packet[6] as u16);
+        let error_id: u8 = vec_packet[8];
+        let error_bytes = &vec_packet[ 9 .. vec_packet.len() ];
+        let err_str = String::from_utf8( error_bytes.to_vec() ).unwrap();
+
+        Ok( Self {
+            error_id: error_id,
+            connection_id: connection_id,
+            err_str: err_str,
+        })
+    }
+
     /// Convert the packet into a vector of bytes that can be sent over the 
     /// wire
     pub fn to_vec( &self ) -> Vec<u8>
@@ -59,7 +76,7 @@ mod tests {
     }
 
     #[test]
-    fn error_response_packet_deserialize()
+    fn error_response_packet_serialize()
     {
         let pack = ErrorResponsePacket::new( 0xAB, 0x1234,
             "foobarbaz".to_string(), ).unwrap();
@@ -80,5 +97,21 @@ mod tests {
         expect_vec.extend( "foobarbaz".as_bytes() );
 
         assert_eq!( pack_vec, expect_vec );
+    }
+
+    #[test]
+    fn error_response_packet_deserialize()
+    {
+        let mut pack = ErrorResponsePacket::new(
+            0xBA,
+            0xAB12,
+            "foo".to_string(),
+        ).unwrap();
+        let pack_vec = pack.to_vec();
+
+        let new_pack = ErrorResponsePacket::from_vec( pack_vec ).unwrap();
+        assert_eq!( pack.connection_id, new_pack.connection_id );
+        assert_eq!( pack.error_id, new_pack.error_id );
+        assert_eq!( pack.err_str, new_pack.err_str );
     }
 }
