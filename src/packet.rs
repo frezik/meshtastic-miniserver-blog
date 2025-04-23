@@ -91,6 +91,7 @@ pub fn packet_to_vec(
     out_vec.push( payload_len as u8 );
     out_vec.extend( payload.clone() );
 
+    println!( "Out: {:?}", out_vec );
     return Ok( out_vec );
 }
 
@@ -129,11 +130,15 @@ pub fn vec_to_packet(
                 DirectoryResponsePacket::from_vec( vec_packet ).unwrap()
             )
         ),
-        //PACKET_TYPE_ARTICLE_RESPONSE => Ok(
-        //    ArticleResponsePacket::from_vec( vec_packet )
-        //),
+        PACKET_TYPE_ARTICLE_RESPONSE => Ok(
+            PacketResult::ArticleResponse(
+                ArticleResponsePacket::from_vec( vec_packet ).unwrap()
+            )
+        ),
         //PACKET_TYPE_ERROR_RESPONSE => Ok(
-        //    ErrorResponsePacket::from_vec( vec_packet )
+        //    PacketResult::ErrorResponse(
+        //        ErrorResponsePacket::from_vec( vec_packet ).unwrap()
+        //    )
         //),
         _ => Err(
             PacketError::UnknownPacketType( packet_type ) 
